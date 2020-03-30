@@ -1,0 +1,20 @@
+{
+  "name": "RTX ON",
+  "version": "12.482.11",
+  "description": "lmao bruh stanford WL #ganggang",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://*/",
+    "https://*/"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*.google.com/*"],
+      "js": ["loaded.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "manifest_version": 2
+}
