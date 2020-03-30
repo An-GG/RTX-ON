@@ -10,7 +10,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://*.khanacademy.org/*"],
+      "matches": ["https://*.youtube-nocookie.com/*"],
       "js": ["loaded.js"],
       "run_at": "document_end",
       "all_frames": true
