@@ -5,7 +5,7 @@ function click() {
 function run() {
   // Get Current URL Number
   chrome.storage.local.get(["current"], function(result) {
-    console.log(result);
+    //console.log(result);
     var currentURLN = 0;
     if (result.current == null) {
       chrome.storage.local.set({"current": "0"}, function() { });
@@ -16,28 +16,47 @@ function run() {
     chrome.tabs.update({
       url: currentURL
     });
+
+    setTimeout(function() {
+      var actualCode = '(' + function() {
+        console.log("AAASSSS")
+        console.log(window);
+
+
+        console.log(alert);
+
+        var tag = document.createElement('script');
+
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+          console.log("lreadyAASDSADSADKJANSDAJSKNDAKJSD");
+        }
+      } + ')();';
+      console.log("this ran");
+
+      chrome.tabs.getSelected(null, function(tab) {
+        chrome.tabs.executeScript(tab.id, {code: actualCode}, function() {});
+      })
+    }, 6000);
+
     chrome.tabs.onUpdated.addListener(function (tabId , info) {
       if (info.status === 'complete') {
         chrome.tabs.getSelected(null, function(tab) {
-          // Send a request to the content script.
           setTimeout(function() {
-          chrome.tabs.sendRequest(tab.id, {action: "getDOM"}, function(response) {
-            console.log(response);
+
+          chrome.tabs.sendRequest(tab.id, {action: "playIfNot"}, function(response) {
+            //console.log(response);
           });
-        }, 2000);
+        }, 3000);
         });
       }
     });
 
   });
 }
-
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  if (request.action == "fromPlayer") {
-    console.log(request.data);
-    sendResponse("TY");
-  }
-});
 
 
 document.getElementById('go').onclick = click;
