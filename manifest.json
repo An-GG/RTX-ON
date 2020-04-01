@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.khanacademy.org/*", "https://*.youtube-nocookie.com/*"],
-      "js": ["runner.js"],
+      "js": ["sidekick.js"],
       "run_at": "document_end",
       "all_frames": true
     }

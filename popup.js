@@ -13,18 +13,31 @@ function run() {
       currentURLN = parseInt(result.current);
     }
     var currentURL = "https://www.khanacademy.org" + urls[currentURLN].ref.replace("&amp;open=1", "");
-    console.log(currentURL);
     chrome.tabs.update({
       url: currentURL
     });
     chrome.tabs.onUpdated.addListener(function (tabId , info) {
       if (info.status === 'complete') {
-        
+        chrome.tabs.getSelected(null, function(tab) {
+          // Send a request to the content script.
+          setTimeout(function() {
+          chrome.tabs.sendRequest(tab.id, {action: "getDOM"}, function(response) {
+            console.log(response);
+          });
+        }, 2000);
+        });
       }
     });
 
   });
 }
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if (request.action == "fromPlayer") {
+    console.log(request.data);
+    sendResponse("TY");
+  }
+});
 
 
 document.getElementById('go').onclick = click;
