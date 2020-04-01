@@ -1,7 +1,7 @@
 {
   "name": "RTX ON",
   "version": "1.0",
-  "description": "lmao bruh stanford WL #ganggang",
+  "description": "stanford WL #ganggang",
   "permissions": [
     "activeTab",
     "tabs",
@@ -12,10 +12,15 @@
   "content_scripts": [
     {
       "matches": ["https://*.khanacademy.org/*", "https://*.youtube-nocookie.com/*"],
-      "js": ["loaded.js"],
+      "js": ["runner.js"],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
+  "browser_action": {
+    "default_icon": "popup.png",
+    "default_popup": "popup.html",
+    "default_title": "do it. just do it."
+  },
   "manifest_version": 2
 }
