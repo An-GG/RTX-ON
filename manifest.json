@@ -12,8 +12,8 @@
   "content_scripts": [
     {
       "matches": ["https://*.khanacademy.org/*"],
-      "js": ["sidekick.js"],
-      "all_frames": false
+      "js": ["loaded.js"],
+      "all_frames": true
     }
   ],
   "browser_action": {
