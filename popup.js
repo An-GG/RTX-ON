@@ -2,6 +2,7 @@ function click() {
   allowRunning = true;
   document.getElementById('go').innerText = "disgusting...  -_-"
   document.getElementById('main').innerText = "running"
+  document.getElementById('notRun').innerText = "";
   run();
 }
 
