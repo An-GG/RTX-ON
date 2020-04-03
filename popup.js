@@ -1,4 +1,5 @@
 function click() {
+  allowRunning = true;
   run();
 }
 
@@ -6,10 +7,11 @@ function resetCounter() {
   chrome.storage.local.set({"current": "0"}, function() { });
 }
 
+
+var allowRunning = false;
 function run() {
   // Get Current URL Number
   chrome.storage.local.get(["current"], function(result) {
-    //console.log(result);
     var currentURLN = 0;
     if (result.current == null) {
       chrome.storage.local.set({"current": "0"}, function() { });
@@ -21,15 +23,34 @@ function run() {
       url: currentURL
     });
 
-    var ended = false;
+
     setTimeout(function() {
+      allowRunning = true;
+    }, 10000);
 
-
-    }, 7000);
+    setTimeout(function() {
+      if (!(publicProg > 0.02))
+      allowRunning = false;
+      run();
+    }, 30000);
 
   });
 }
-
+function tryRunning() {
+  if (allowRunning) {
+    if (ended) {
+      // Increment and Rerun
+      chrome.storage.local.get(["current"], function(result) {
+        var currentURLN = parseInt(result.current);
+        currentURLN += 1;
+        chrome.storage.local.set({"current": currentURLN}, function() {
+          run();
+        });
+      });
+      allowRunning = false;
+    }
+  }
+}
 
 document.getElementById('go').onclick = click;
 document.getElementById('reset').onclick = resetCounter;
@@ -38,29 +59,29 @@ document.getElementById('reset').onclick = resetCounter;
 
 
 
-
-
+var publicProg = 0;
+var ended = false;
 function checkEnded() {
   try {
     chrome.tabs.getSelected(null, function(tab) {
       chrome.tabs.sendRequest(tab.id, {action: "getPlayer"}, function(response) {
         var progC = response.split(',');
         var prog = parseFloat(progC[0])/parseFloat(progC[1]);
+        publicProg = prog;
         if (prog > 0.996) {
           console.log('video complete');
-          currentURLN += 1;
-          chrome.storage.local.set({"current": currentURLN}, function() { });
           ended = true;
-          //setTimeout(run, 1000);
-          chrome.storage.local.get(["current"], function(resultX) {
-            console.log(resultX);
-          });
         } else {
+          ended = false;
           console.log('not done');
         }
       });
     });
-  } catch(e) {console.log(e);}
+  } catch(e) {
+    ended = false;
+    console.log(e)
+  }
+  tryRunning();
   setTimeout(checkEnded, 1000);
 }
 checkEnded();

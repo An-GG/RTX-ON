@@ -20,6 +20,7 @@ var getAPI = function() {
       console.log(window.player);
     }
   } catch(e) {console.log(e);}
+  window.loadedYT = "YES";
 }
 
 var playIfNotPlaying = function() {
@@ -37,12 +38,19 @@ var setPref = function() {
 
 var playerHeadUpdate = function() {
   function saveYTPos() {
+    var isArticle = false;
+    if (window.loadedYT && window.player == null) {
+      isArticle = true;
+    }
     try {
       try {
         var element = window.document.getElementById('playbackID');
         element.parentNode.removeChild(element);
       } catch(e) {console.log(e);}
-      let frac = window.player.getCurrentTime() + "," + window.player.getDuration();
+      var frac = "1,1";
+      if (!isArticle) {
+        frac = window.player.getCurrentTime() + "," + window.player.getDuration();
+      }
       var tag = window.document.createElement('div');
       tag.id = 'playbackID';
       tag.textContent = frac;
@@ -51,6 +59,12 @@ var playerHeadUpdate = function() {
     setTimeout(saveYTPos, 500);
   }
   saveYTPos();
+}
+
+var nudgeIfNeeded = function() {
+  if (window.player.getCurrentTime() < 5) {
+    window.player.seekTo(4, true);
+  }
 }
 
 console.log(window.document.documentElement.outerHTML);
@@ -67,6 +81,10 @@ setTimeout(function() {
     inject(playerHeadUpdate);
   }, 3000);
 }, 5000);
+
+setTimeout(function() {
+  inject(nudgeIfNeeded);
+}, 15000);
 
 //console.log(document.documentElement.outerHTML);
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
