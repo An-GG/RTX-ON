@@ -29,9 +29,10 @@ function run() {
     }, 10000);
 
     setTimeout(function() {
-      if (!(publicProg > 0.02))
-      allowRunning = false;
-      run();
+      if (!(publicProg > 0.02)) {
+        allowRunning = false;
+        run();
+      }
     }, 30000);
 
   });
