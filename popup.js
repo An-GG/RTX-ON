@@ -2,6 +2,10 @@ function click() {
   run();
 }
 
+function resetCounter() {
+  chrome.storage.local.set({"current": "0"}, function() { });
+}
+
 function run() {
   // Get Current URL Number
   chrome.storage.local.get(["current"], function(result) {
@@ -17,55 +21,49 @@ function run() {
       url: currentURL
     });
 
+    var ended = false;
     setTimeout(function() {
-      var actualCode = '(' + function() {
-        console.log("AAASSSS")
-        console.log(window);
 
 
-        console.log(alert);
-
-        var tag = document.createElement('script');
-
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
-          console.log("lreadyAASDSADSADKJANSDAJSKNDAKJSD");
-        }
-      } + ')();';
-      console.log("this ran");
-
-      chrome.tabs.getSelected(null, function(tab) {
-        chrome.tabs.executeScript(tab.id, {code: actualCode}, function() {});
-      })
-    }, 6000);
-
-    chrome.tabs.onUpdated.addListener(function (tabId , info) {
-      if (info.status === 'complete') {
-        chrome.tabs.getSelected(null, function(tab) {
-          setTimeout(function() {
-
-          chrome.tabs.sendRequest(tab.id, {action: "playIfNot"}, function(response) {
-            //console.log(response);
-          });
-        }, 3000);
-        });
-      }
-    });
+    }, 7000);
 
   });
 }
 
 
 document.getElementById('go').onclick = click;
+document.getElementById('reset').onclick = resetCounter;
 
 
 
 
 
 
+
+function checkEnded() {
+  try {
+    chrome.tabs.getSelected(null, function(tab) {
+      chrome.tabs.sendRequest(tab.id, {action: "getPlayer"}, function(response) {
+        var progC = response.split(',');
+        var prog = parseFloat(progC[0])/parseFloat(progC[1]);
+        if (prog > 0.996) {
+          console.log('video complete');
+          currentURLN += 1;
+          chrome.storage.local.set({"current": currentURLN}, function() { });
+          ended = true;
+          //setTimeout(run, 1000);
+          chrome.storage.local.get(["current"], function(resultX) {
+            console.log(resultX);
+          });
+        } else {
+          console.log('not done');
+        }
+      });
+    });
+  } catch(e) {console.log(e);}
+  setTimeout(checkEnded, 1000);
+}
+checkEnded();
 
 
 

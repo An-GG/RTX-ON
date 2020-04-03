@@ -11,10 +11,9 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://*.khanacademy.org/*", "https://*.youtube-nocookie.com/*"],
+      "matches": ["https://*.khanacademy.org/*"],
       "js": ["sidekick.js"],
-      "run_at": "document_end",
-      "all_frames": true
+      "all_frames": false
     }
   ],
   "browser_action": {

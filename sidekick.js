@@ -1,46 +1,72 @@
 'use strict';
 
-var actualCode = '(' + function() {
-  console.log("AAASSSS")
-  console.log(window);
+function inject(payload) {
+  try {
+    var tag = document.createElement('script');
+    tag.textContent = '(' + payload  + ')();';
+    document.head.appendChild(tag);
+  } catch(e) {console.log(e);}
+}
 
 
-  console.log(window.alert);
+var getAPI = function() {
+  try {
+    let testYT = window.YT;
+    if (testYT == null) { } else {
+      window.YTAPI = testYT;
+      var parsedID = window.document.getElementsByName('ka-player-iframe')[0].id
+      console.log(parsedID);
+      window.player = window.YT.get(parsedID);
+      console.log(window.player);
+    }
+  } catch(e) {console.log(e);}
+}
 
-  var tag = document.createElement('script');
+var playIfNotPlaying = function() {
+  try {
+    window.player.playVideo();
+    window.player.seekTo(0, true);
+  } catch(e) {console.log(e);}
+}
 
-  tag.src = "https://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var setPref = function() {
+  try {
+    window.player.setPlaybackRate(2);
+  } catch(e) {console.log(e);}
+}
 
-  function onYouTubeIframeAPIReady() {
-    console.log("lreadyAASDSADSADKJANSDAJSKNDAKJSD");
+var playerHeadUpdate = function() {
+  function saveYTPos() {
+    try {
+      try {
+        var element = window.document.getElementById('playbackID');
+        element.parentNode.removeChild(element);
+      } catch(e) {console.log(e);}
+      let frac = window.player.getCurrentTime() + "," + window.player.getDuration();
+      var tag = window.document.createElement('div');
+      tag.id = 'playbackID';
+      tag.textContent = frac;
+      document.head.appendChild(tag);
+    } catch(e) {console.log(e);}
+    setTimeout(saveYTPos, 500);
   }
-
-  console.log(window.YT);
-} + ')();';
-
-function loadScript() {
-  //chrome.tabs.executeScript(actualCode);
-  var tag = document.createElement('script');
-  tag.textContent = actualCode;
-  document.head.appendChild(tag);
+  saveYTPos();
 }
 
-function loadPlayer() {
-  window.onYouTubePlayerAPIReady = function() {
-      onYouTubePlayer();
-      console.log('apidone');
-  };
-}
-
-
-
+console.log(window.document.documentElement.outerHTML);
 
 setTimeout(function() {
-  loadScript();
-
-}, 6000);
+  inject(getAPI);
+}, 4000);
+setTimeout(function() {
+  inject(playIfNotPlaying);
+  setTimeout(function() {
+    inject(setPref);
+  }, 1000);
+  setTimeout(function () {
+    inject(playerHeadUpdate);
+  }, 3000);
+}, 5000);
 
 //console.log(document.documentElement.outerHTML);
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
@@ -55,14 +81,25 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     }
 
     if (request.action == "playIfNot") {
-      //console.log(document.documentElement.outerHTML);
+      inject(playIfNotPlaying);
     }
 
-  } else {
-    if (request.action == "getPlayer") {
-      returnVar = "not possible yet"
+    if (request.action == "setPref") {
+      inject(setPref);
+      setTimeout(function () {
+        inject(playerHeadUpdate);
+      }, 3000);
     }
+
+    if (request.action == "getPlayer") {
+      try {
+        returnVar = document.getElementById('playbackID').textContent;
+      } catch(e) {console.log(e);}
+    }
+    console.log(returnVar);
+    sendResponse(returnVar);
+  } else {
+
 
   }
-  sendResponse(returnVar);
 });
