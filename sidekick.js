@@ -84,7 +84,7 @@ setTimeout(function() {
 
 setTimeout(function() {
   inject(nudgeIfNeeded);
-}, 15000);
+}, 17000);
 
 //console.log(document.documentElement.outerHTML);
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {

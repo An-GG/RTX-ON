@@ -33,7 +33,7 @@ function run() {
         allowRunning = false;
         run();
       }
-    }, 30000);
+    }, 40000);
 
   });
 }
