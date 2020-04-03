@@ -1,12 +1,22 @@
 function click() {
   allowRunning = true;
+  document.getElementById('go').innerText = "disgusting...  -_-"
+  document.getElementById('main').innerText = "running"
   run();
 }
 
 function resetCounter() {
-  chrome.storage.local.set({"current": "0"}, function() { });
+  chrome.storage.local.set({"current": document.getElementById('fname').value}, function() { });
+  chrome.storage.local.get(["current"], function(result) {
+    document.getElementById('num').innerText = result.current;
+  });
+  allowRunning = false;
+  run();
 }
 
+function status(a) {
+  document.getElementById('stat').innerText = a + "...";
+}
 
 var allowRunning = false;
 function run() {
@@ -16,13 +26,23 @@ function run() {
     if (result.current == null) {
       chrome.storage.local.set({"current": "0"}, function() { });
     } else {
-      currentURLN = parseInt(result.current);
+      try {
+        currentURLN = parseInt(result.current);
+      } catch(err) {
+        console.log(err);
+      }
     }
+    chrome.storage.local.get(["current"], function(result) {
+      document.getElementById('num').innerText = result.current;
+    });
     var currentURL = "https://www.khanacademy.org" + urls[currentURLN].ref.replace("&amp;open=1", "");
     chrome.tabs.update({
       url: currentURL
     });
-
+    status('starting new video')
+    if (publicProgC == '1,1') {
+      status('page is article, loading next');
+    }
 
     setTimeout(function() {
       allowRunning = true;
@@ -31,6 +51,7 @@ function run() {
     setTimeout(function() {
       if (!(publicProg > 0.02)) {
         allowRunning = false;
+        status('seems unresponsive, reloading');
         run();
       }
     }, 40000);
@@ -53,19 +74,25 @@ function tryRunning() {
   }
 }
 
+
+
 document.getElementById('go').onclick = click;
-document.getElementById('reset').onclick = resetCounter;
+document.getElementById('set').onclick = resetCounter;
+chrome.storage.local.get(["current"], function(result) {
+  document.getElementById('num').innerText = result.current;
+});
 
 
 
 
-
+var publicProgC = ""
 var publicProg = 0;
 var ended = false;
 function checkEnded() {
   try {
     chrome.tabs.getSelected(null, function(tab) {
       chrome.tabs.sendRequest(tab.id, {action: "getPlayer"}, function(response) {
+        publicProgC = progC;
         var progC = response.split(',');
         var prog = parseFloat(progC[0])/parseFloat(progC[1]);
         publicProg = prog;
@@ -73,6 +100,7 @@ function checkEnded() {
           console.log('video complete');
           ended = true;
         } else {
+          status('video in progress');
           ended = false;
           console.log('not done');
         }
@@ -83,6 +111,7 @@ function checkEnded() {
     console.log(e)
   }
   tryRunning();
+
   setTimeout(checkEnded, 1000);
 }
 checkEnded();
