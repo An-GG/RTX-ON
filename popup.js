@@ -80,7 +80,11 @@ function tryRunning() {
 document.getElementById('go').onclick = click;
 document.getElementById('set').onclick = resetCounter;
 chrome.storage.local.get(["current"], function(result) {
-  document.getElementById('num').innerText = result.current;
+  if (result.current == null) {
+    document.getElementById('num').innerText = '0';
+  } else {
+    document.getElementById('num').innerText = result.current;
+  }
 });
 
 

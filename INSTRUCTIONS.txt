@@ -1,0 +1,10 @@
+Hello,
+
+this is instruction.
+instruction:
+
+1. open chrome, go to   chrome://extensions/
+2. on top right, turn on developer mode
+3. on top left, click 'load unpacked'
+4. double click the folder RTX-ON and open it
+5. go to khanacademy and click on extension
