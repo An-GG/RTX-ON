@@ -50,7 +50,7 @@ function run() {
     }, 10000);
 
     setTimeout(function() {
-      if (!(publicProg > 0.02)) {
+      if (!(publicProg > 0.0002)) {
         allowRunning = false;
         status('seems unresponsive, reloading');
         run();
@@ -112,6 +112,7 @@ function checkEnded() {
       });
     });
   } catch(e) {
+    publicProg = 0;
     ended = false;
     console.log(e)
   }
